@@ -10,6 +10,16 @@ const AuthorSchema = new Schema({
   date_of_death: { type: Date },
 });
 
+function getFormattedDate(date) {
+  return DateTime.fromJSDate(date).toLocaleString(DateTime.DATE_MED);
+}
+
+function getValidDate(date) {
+  const formattedDate = getFormattedDate(date);
+  const isValidDate = formattedDate.toString() !== "Invalid DateTime";
+  return isValidDate ? formattedDate : "";
+}
+
 // Virtual for author's full name
 AuthorSchema.virtual("name").get(function () {
   // To avoid errors in cases where an author does not have either a family name or first name
@@ -22,22 +32,11 @@ AuthorSchema.virtual("name").get(function () {
   return fullname;
 });
 
-function getFormattedDate(date) {
-  return DateTime.fromJSDate(date).toLocaleString(DateTime.DATE_MED);
-}
+AuthorSchema.virtual("lifespan").get(function () {
+  const dateOfBirth = getValidDate(this.date_of_birth);
+  const dateOfDeath = getValidDate(this.date_of_death);
 
-function getDate(date) {
-  const formattedDate = getFormattedDate(date);
-  const isValidDate = formattedDate.toString() !== "Invalid DateTime";
-  return isValidDate ? formattedDate : "";
-}
-
-AuthorSchema.virtual("formatted_date_of_birth").get(function () {
-  return getDate(this.date_of_birth);
-});
-
-AuthorSchema.virtual("formatted_date_of_death").get(function () {
-  return getDate(this.date_of_death);
+  return `${dateOfBirth} - ${dateOfDeath}`;
 });
 
 // Virtual for author's URL
