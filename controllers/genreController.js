@@ -15,7 +15,7 @@ exports.genre_detail = asyncHandler(async (req, res, next) => {
     Genre.findById(req.params.id).exec(),
     Book.find({ genre: req.params.id }, "title summary").exec(),
   ]);
-  console.log(genre, "separate", booksInGenre);
+
   if (genre === null) {
     // No results.
     const err = new Error("Genre not found");
