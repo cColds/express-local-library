@@ -7,11 +7,17 @@ const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 const compression = require("compression");
 const helmet = require("helmet");
+const RateLimit = require("express-rate-limit");
 const indexRouter = require("./routes/index");
 const usersRouter = require("./routes/users");
 const catalogRouter = require("./routes/catalog");
 
 const app = express();
+
+const limiter = RateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: 20,
+});
 const mongoDB = `mongodb+srv://admin:${process.env.MONGO_PASS}@cluster0.cwmmsd2.mongodb.net/local_library?retryWrites=true&w=majority`;
 async function main() {
   await mongoose.connect(mongoDB);
@@ -23,6 +29,7 @@ app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "pug");
 
 // middleware
+app.use(limiter);
 app.use(
   helmet.contentSecurityPolicy({
     directives: {
