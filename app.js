@@ -18,7 +18,9 @@ const limiter = RateLimit({
   windowMs: 1 * 60 * 1000, // 1 minute
   max: 20,
 });
-const mongoDB = `mongodb+srv://admin:${process.env.MONGO_PASS}@cluster0.cwmmsd2.mongodb.net/local_library?retryWrites=true&w=majority`;
+
+const mongoDB = process.env.MONGODB_URI;
+
 async function main() {
   await mongoose.connect(mongoDB);
 }
